@@ -26,8 +26,11 @@ export function FlashcardsSidebar() {
 	const [showCreateModal, setShowCreateModal] = useState(false)
 
 	const isActive = (path: string) => {
+		if (path === '/') {
+			return pathname === '/'
+		}
 		if (pathname === path) return true
-		if (pathname.startsWith(path)) return true
+		if (pathname.startsWith(path + '/')) return true
 		return false
 	}
 

@@ -1,5 +1,13 @@
 import React from 'react';
 import { AlertTriangle, Trash2, Copy, Move, X } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 interface BulkConfirmDialogProps {
   isOpen: boolean;
@@ -22,7 +30,6 @@ export const BulkConfirmDialog: React.FC<BulkConfirmDialogProps> = ({
   editField,
   editValue
 }) => {
-  if (!isOpen) return null;
 
   const getOperationDetails = () => {
     switch (operation) {
@@ -81,55 +88,47 @@ export const BulkConfirmDialog: React.FC<BulkConfirmDialogProps> = ({
   const details = getOperationDetails();
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-900 border border-gray-800 rounded-lg max-w-md w-full">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-800">
-          <div className="flex items-center gap-3">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="bg-gray-900 text-white max-w-md border-0">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-3 text-lg">
             {details.icon}
-            <h3 className="text-lg font-semibold text-white">{details.title}</h3>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="p-6">
-          <p className="text-gray-300 mb-4 leading-relaxed">
+            {details.title}
+          </DialogTitle>
+          <DialogDescription className="text-gray-300 leading-relaxed">
             {details.message}
-          </p>
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
           {details.warning && (
-            <div className="bg-amber-900/20 border border-amber-800/50 rounded-lg p-3 mb-4">
+            <div className="bg-amber-900/20 border border-amber-800/50 rounded-lg p-3">
               <p className="text-amber-200 text-sm leading-relaxed">
                 {details.warning}
               </p>
             </div>
           )}
-        </div>
 
-        {/* Actions */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-800">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-gray-300 hover:text-white border border-gray-700 hover:border-gray-600 rounded-lg transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => {
-              onConfirm();
-              onClose();
-            }}
-            className={`px-4 py-2 rounded-lg transition-colors font-medium ${details.confirmClass}`}
-          >
-            {details.confirmText}
-          </button>
+          <div className="flex items-center justify-end gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="border-gray-700 text-gray-300 hover:bg-gray-800"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                onConfirm();
+                onClose();
+              }}
+              className={details.confirmClass}
+            >
+              {details.confirmText}
+            </Button>
+          </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

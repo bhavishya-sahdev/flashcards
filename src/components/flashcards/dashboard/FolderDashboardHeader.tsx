@@ -2,16 +2,17 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { ArrowLeft, FolderOpen, BookOpen, Clock, Brain, CheckCircle, Plus, Settings } from 'lucide-react'
+import { ArrowLeft, FolderOpen, BookOpen, Clock, Brain, CheckCircle, Plus, Sparkles } from 'lucide-react'
 import { FlashcardFolder } from '@/lib/types'
 
 interface FolderDashboardHeaderProps {
 	folder: FlashcardFolder
 	onAddCard: () => void
+	onGenerateCards?: () => void
 	className?: string
 }
 
-export function FolderDashboardHeader({ folder, onAddCard, className = '' }: FolderDashboardHeaderProps) {
+export function FolderDashboardHeader({ folder, onAddCard, onGenerateCards, className = '' }: FolderDashboardHeaderProps) {
 	const totalCards = folder.flashcards.length
 	const cardsDue = folder.flashcards.filter(card =>
 		new Date(card.nextReviewDate) <= new Date()
@@ -48,6 +49,16 @@ export function FolderDashboardHeader({ folder, onAddCard, className = '' }: Fol
 					</div>
 
 					<div className="flex items-center gap-3 flex-shrink-0">
+						{onGenerateCards && (
+							<button
+								onClick={onGenerateCards}
+								className="flex items-center gap-2 px-4 py-3 bg-white text-black font-medium hover:bg-gray-100 transition-all duration-200"
+								title="Generate flashcards with AI (G)"
+							>
+								<Sparkles className="w-4 h-4" />
+								<span className="hidden sm:inline">AI Generate</span>
+							</button>
+						)}
 						<button
 							onClick={onAddCard}
 							className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200"

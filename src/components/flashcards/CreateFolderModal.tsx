@@ -59,7 +59,7 @@ export function CreateFolderModal({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={handleClose}>
-			<DialogContent className="bg-gray-900 border-gray-800 text-white max-w-md">
+			<DialogContent className="bg-gray-900 text-white max-w-md border-0">
 				<DialogHeader>
 					<DialogTitle className="flex items-center gap-2 text-xl">
 						<Plus className="w-5 h-5 text-blue-400" />

@@ -7,6 +7,7 @@ import { SignUpDialog } from '@/components/auth/sign-up-dialog';
 import { BackgroundAnimation } from '@/components/flashcards/BackgroundAnimation';
 import { CodeEditor } from '@/components/flashcards/CodeEditor';
 import { FlashcardCreator } from '@/components/flashcards/FlashcardCreator';
+import { FlashcardGenerator } from '@/components/flashcards/FlashcardGenerator';
 import { FlashcardDisplay } from '@/components/flashcards/FlashcardsDisplay';
 import { FlashcardListView } from '@/components/flashcards/FlashcardListView';
 import { BulkManagementToolbar } from '@/components/flashcards/BulkManagementToolbar';
@@ -28,9 +29,13 @@ import { DashboardCard } from '@/components/flashcards/dashboard/DashboardCard';
 import { useSession } from '@/lib/auth-client';
 import { Flashcard } from '@/lib/types';
 import React, { useState, useEffect } from 'react';
-import { Loader2, AlertCircle, ArrowLeft, Brain, Code, BookOpen, Target, BarChart3, Eye, Lock, Plus, HelpCircle, CheckSquare, Download, List, Square } from 'lucide-react';
+import { Loader2, AlertCircle, ArrowLeft, Brain, Code, BookOpen, Target, BarChart3, Eye, Lock, Plus, HelpCircle, CheckSquare, Download, List, Square, Sparkles } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import {
+    Dialog,
+    DialogContent,
+} from '@/components/ui/dialog';
 
 const FlashcardFolderPage = () => {
     const params = useParams<{ folderId: string }>();
@@ -49,6 +54,7 @@ const FlashcardFolderPage = () => {
     const [studyMode, setStudyMode] = useState<'study' | 'browse' | 'analytics'>('study');
     const [showStudySession, setShowStudySession] = useState(false);
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [showGenerator, setShowGenerator] = useState(false);
     const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
     // View mode state (list view is now default)
@@ -145,6 +151,11 @@ const FlashcardFolderPage = () => {
                 description: 'New flashcard',
                 category: 'Actions'
             },
+            'g': {
+                handler: () => setShowGenerator(true),
+                description: 'AI Generate flashcards',
+                category: 'Actions'
+            },
             'e': {
                 handler: () => studyMode === 'browse' && showAnswer && currentCardData?.codeTemplate && toggleCodeEditor(),
                 description: 'Toggle code editor',
@@ -161,6 +172,8 @@ const FlashcardFolderPage = () => {
                         setShowKeyboardHelp(false);
                     } else if (showCreateForm) {
                         setShowCreateForm(false);
+                    } else if (showGenerator) {
+                        setShowGenerator(false);
                     } else if (viewMode === 'list' && selectedCards.size > 0) {
                         setSelectedCards(new Set());
                     } else if (viewMode === 'single') {
@@ -230,6 +243,20 @@ const FlashcardFolderPage = () => {
             await createFlashcard(flashcardData, currentFolder.id);
         } catch (error) {
             setErrorMessage('Failed to create flashcard. Please try again.');
+        }
+    };
+
+    const handleGeneratedCards = async (generatedCards: any[]) => {
+        if (!currentFolder) return;
+
+        try {
+            // Create each generated card
+            for (const cardData of generatedCards) {
+                await createFlashcard(cardData, currentFolder.id);
+            }
+            setShowGenerator(false);
+        } catch (error) {
+            setErrorMessage('Failed to create generated flashcards. Please try again.');
         }
     };
 
@@ -403,6 +430,7 @@ const FlashcardFolderPage = () => {
                     <FolderDashboardHeader
                         folder={currentFolder}
                         onAddCard={() => setShowCreateForm(true)}
+                        onGenerateCards={() => setShowGenerator(true)}
                         className="mb-8"
                     />
                 )}
@@ -647,27 +675,31 @@ const FlashcardFolderPage = () => {
                 )}
 
 
-                {/* Create Flashcard Modal - Mobile optimized */}
-                {showCreateForm && (
-                    <div
-                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
-                        onClick={(e) => e.target === e.currentTarget && setShowCreateForm(false)}
-                    >
-                        <div
-                            className="bg-gray-900 border-0 sm:border border-gray-800 max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-lg"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {currentFolder && <FlashcardCreator
-                                onCreateFlashcard={(flashcard) => {
-                                    handleCreateFlashcard(flashcard);
-                                    setShowCreateForm(false);
-                                }}
-                                mounted={mounted}
-                                onCancel={() => setShowCreateForm(false)}
-                            />}
-                        </div>
-                    </div>
-                )}
+                {/* Create Flashcard Modal */}
+                <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
+                    <DialogContent className="bg-gray-900 text-white max-w-2xl max-h-[90vh] overflow-y-auto border-0">
+                        {currentFolder && <FlashcardCreator
+                            onCreateFlashcard={(flashcard) => {
+                                handleCreateFlashcard(flashcard);
+                                setShowCreateForm(false);
+                            }}
+                            mounted={mounted}
+                            onCancel={() => setShowCreateForm(false)}
+                        />}
+                    </DialogContent>
+                </Dialog>
+
+                {/* AI Flashcard Generator Modal */}
+                <Dialog open={showGenerator} onOpenChange={setShowGenerator}>
+                    <DialogContent className="bg-gray-900 text-white max-w-2xl max-h-[90vh] overflow-y-auto border-0">
+                        {currentFolder && <FlashcardGenerator
+                            folderId={currentFolder.id}
+                            onCardsGenerated={handleGeneratedCards}
+                            onCancel={() => setShowGenerator(false)}
+                            mounted={mounted}
+                        />}
+                    </DialogContent>
+                </Dialog>
 
                 {errorMessage && (
                     <ErrorNotification

@@ -74,24 +74,16 @@ solution();`;
     };
 
     return (
-        <div className="bg-gray-900 border border-gray-800">
+        <div className="bg-gray-900">
             <div className="p-6 border-b border-gray-800">
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                            <Plus className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-semibold text-white">Create New Flashcard</h3>
-                            <div className="text-sm text-gray-400">Fill in the details for your new flashcard</div>
-                        </div>
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                        <Plus className="w-5 h-5 text-white" />
                     </div>
-                    <button
-                        onClick={handleCancel}
-                        className="p-2 text-gray-400 hover:text-gray-200 transition-colors"
-                    >
-                        <X className="w-5 h-5" />
-                    </button>
+                    <div>
+                        <h3 className="text-lg font-semibold text-white">Create New Flashcard</h3>
+                        <div className="text-sm text-gray-400">Fill in the details for your new flashcard</div>
+                    </div>
                 </div>
 
                 {/* Form Header - Category and Difficulty */}

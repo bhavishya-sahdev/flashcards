@@ -16,6 +16,16 @@ import { FolderCard } from '@/components/flashcards/dashboard/FolderCard';
 import { DashboardCard } from '@/components/flashcards/dashboard/DashboardCard';
 import React, { useState, useEffect } from 'react';
 import { Loader2, AlertCircle, FolderOpen, Plus, Save, X, Brain, LayoutDashboard } from 'lucide-react';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const Homepage = () => {
     const { data } = useSession();
@@ -220,16 +230,6 @@ const Homepage = () => {
             <BackgroundAnimation />
             <div className="flex items-center gap-2 mb-4">
                 <SidebarTrigger className="text-white hover:text-gray-300 mx-4" />
-                <Navbar items={[{ label: 'Blog', href: "/blog" }]} itemsRight={[<div className='flex gap-2 items-center' key="auth">
-                    {data ? (
-                        <span className='text-sm font-medium text-gray-300'>Hey, {data.user.name.split(" ")[0]}!</span>
-                    ) : (
-                        <>
-                            <SignInDialog triggerLabel='Sign in' />
-                            <SignUpDialog triggerLabel='Sign up' />
-                        </>
-                    )}
-                </div>]} />
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
@@ -311,112 +311,136 @@ const Homepage = () => {
                 </div>
 
                 {/* Create Folder Form Modal */}
-                {showCreateForm && (
-                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                        <div className="bg-gray-900 border border-gray-800 max-w-md w-full p-6">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-xl font-semibold text-white">Create New Folder</h3>
-                                <button
-                                    onClick={cancelEditing}
-                                    className="text-gray-400 hover:text-white transition-colors"
+                <Dialog open={showCreateForm} onOpenChange={(open) => !open && cancelEditing()}>
+                    <DialogContent className="bg-gray-900 text-white max-w-md border-0">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                                <Plus className="w-5 h-5 text-blue-400" />
+                                Create New Folder
+                            </DialogTitle>
+                            <DialogDescription className="text-gray-400">
+                                Create a new folder to organize your flashcards by topic or subject.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            handleCreateFolder(newFolderName, newFolderDescription);
+                        }} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="folder-name" className="text-sm font-medium text-gray-300">
+                                    Folder Name *
+                                </Label>
+                                <Input
+                                    id="folder-name"
+                                    type="text"
+                                    value={newFolderName}
+                                    onChange={(e) => setNewFolderName(e.target.value)}
+                                    placeholder="e.g., JavaScript Fundamentals"
+                                    className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500"
+                                    autoFocus
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="folder-description" className="text-sm font-medium text-gray-300">
+                                    Description
+                                </Label>
+                                <textarea
+                                    id="folder-description"
+                                    value={newFolderDescription}
+                                    onChange={(e) => setNewFolderDescription(e.target.value)}
+                                    placeholder="e.g., Basic JavaScript concepts, syntax, and best practices"
+                                    className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none h-20 resize-none"
+                                />
+                            </div>
+                            <div className="flex gap-3 pt-4">
+                                <Button
+                                    type="submit"
+                                    disabled={!newFolderName.trim()}
+                                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                                 >
-                                    <X className="w-5 h-5" />
-                                </button>
+                                    <Save className="w-4 h-4 mr-2" />
+                                    Create Folder
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={cancelEditing}
+                                    className="border-gray-700 text-gray-300 hover:bg-gray-800"
+                                >
+                                    <X className="w-4 h-4 mr-2" />
+                                    Cancel
+                                </Button>
                             </div>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm text-gray-300 mb-2">Folder Name</label>
-                                    <input
-                                        type="text"
-                                        value={newFolderName}
-                                        onChange={(e) => setNewFolderName(e.target.value)}
-                                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white focus:border-blue-500 focus:outline-none"
-                                        placeholder="Enter folder name..."
-                                        autoFocus
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm text-gray-300 mb-2">Description</label>
-                                    <textarea
-                                        value={newFolderDescription}
-                                        onChange={(e) => setNewFolderDescription(e.target.value)}
-                                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white focus:border-blue-500 focus:outline-none h-20 resize-none"
-                                        placeholder="Enter folder description..."
-                                    />
-                                </div>
-                                <div className="flex gap-3 pt-4">
-                                    <button
-                                        onClick={() => handleCreateFolder(newFolderName, newFolderDescription)}
-                                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
-                                    >
-                                        <Save className="w-4 h-4" />
-                                        Create Folder
-                                    </button>
-                                    <button
-                                        onClick={cancelEditing}
-                                        className="px-4 py-3 border border-gray-700 text-gray-300 hover:bg-gray-800 transition-colors"
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                        </form>
+                    </DialogContent>
+                </Dialog>
 
                 {/* Edit Folder Form Modal */}
-                {editingFolderId && (
-                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                        <div className="bg-gray-900 border border-gray-800 max-w-md w-full p-6">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-xl font-semibold text-white">Edit Folder</h3>
-                                <button
-                                    onClick={cancelEditing}
-                                    className="text-gray-400 hover:text-white transition-colors"
+                <Dialog open={!!editingFolderId} onOpenChange={(open) => !open && cancelEditing()}>
+                    <DialogContent className="bg-gray-900 text-white max-w-md border-0">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                                <FolderOpen className="w-5 h-5 text-emerald-400" />
+                                Edit Folder
+                            </DialogTitle>
+                            <DialogDescription className="text-gray-400">
+                                Update the folder name and description.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            if (editingFolderId) {
+                                handleEditFolder(editingFolderId, newFolderName, newFolderDescription);
+                            }
+                        }} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-folder-name" className="text-sm font-medium text-gray-300">
+                                    Folder Name *
+                                </Label>
+                                <Input
+                                    id="edit-folder-name"
+                                    type="text"
+                                    value={newFolderName}
+                                    onChange={(e) => setNewFolderName(e.target.value)}
+                                    placeholder="Enter folder name..."
+                                    className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500"
+                                    autoFocus
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-folder-description" className="text-sm font-medium text-gray-300">
+                                    Description
+                                </Label>
+                                <textarea
+                                    id="edit-folder-description"
+                                    value={newFolderDescription}
+                                    onChange={(e) => setNewFolderDescription(e.target.value)}
+                                    placeholder="Enter folder description..."
+                                    className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none h-20 resize-none"
+                                />
+                            </div>
+                            <div className="flex gap-3 pt-4">
+                                <Button
+                                    type="submit"
+                                    disabled={!newFolderName.trim()}
+                                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
                                 >
-                                    <X className="w-5 h-5" />
-                                </button>
+                                    <Save className="w-4 h-4 mr-2" />
+                                    Save Changes
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={cancelEditing}
+                                    className="border-gray-700 text-gray-300 hover:bg-gray-800"
+                                >
+                                    <X className="w-4 h-4 mr-2" />
+                                    Cancel
+                                </Button>
                             </div>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm text-gray-300 mb-2">Folder Name</label>
-                                    <input
-                                        type="text"
-                                        value={newFolderName}
-                                        onChange={(e) => setNewFolderName(e.target.value)}
-                                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white focus:border-blue-500 focus:outline-none"
-                                        placeholder="Enter folder name..."
-                                        autoFocus
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm text-gray-300 mb-2">Description</label>
-                                    <textarea
-                                        value={newFolderDescription}
-                                        onChange={(e) => setNewFolderDescription(e.target.value)}
-                                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white focus:border-blue-500 focus:outline-none h-20 resize-none"
-                                        placeholder="Enter folder description..."
-                                    />
-                                </div>
-                                <div className="flex gap-3 pt-4">
-                                    <button
-                                        onClick={() => handleEditFolder(editingFolderId, newFolderName, newFolderDescription)}
-                                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-medium hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200"
-                                    >
-                                        <Save className="w-4 h-4" />
-                                        Save Changes
-                                    </button>
-                                    <button
-                                        onClick={cancelEditing}
-                                        className="px-4 py-3 border border-gray-700 text-gray-300 hover:bg-gray-800 transition-colors"
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                        </form>
+                    </DialogContent>
+                </Dialog>
 
                 {errorMessage && (
                     <ErrorNotification

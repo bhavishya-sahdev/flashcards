@@ -1,6 +1,13 @@
 import React from 'react';
 import { X, Keyboard, ArrowLeft, ArrowRight, Space, Hash } from 'lucide-react';
 import { KeyboardShortcut } from '@/hooks/useKeyboardShortcuts';
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogDescription,
+} from '@/components/ui/dialog';
 
 interface KeyboardShortcutsHelpProps {
 	isOpen: boolean;
@@ -49,7 +56,6 @@ export const KeyboardShortcutsHelp: React.FC<KeyboardShortcutsHelpProps> = ({
 	onClose,
 	shortcuts,
 }) => {
-	if (!isOpen) return null;
 
 	// Group shortcuts by category
 	const groupedShortcuts = shortcuts.reduce((acc, shortcut) => {
@@ -61,35 +67,22 @@ export const KeyboardShortcutsHelp: React.FC<KeyboardShortcutsHelpProps> = ({
 	}, {} as Record<string, KeyboardShortcut[]>);
 
 	return (
-		<div
-			className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-			onClick={(e) => e.target === e.currentTarget && onClose()}
-		>
-			<div
-				className="bg-gray-900 border border-gray-800 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-				onClick={(e) => e.stopPropagation()}
-			>
-				{/* Header */}
-				<div className="flex items-center justify-between p-6 border-b border-gray-800">
-					<div className="flex items-center gap-3">
+		<Dialog open={isOpen} onOpenChange={onClose}>
+			<DialogContent className="bg-gray-900 text-white max-w-2xl max-h-[90vh] overflow-y-auto border-0">
+				<DialogHeader>
+					<DialogTitle className="flex items-center gap-3 text-lg">
 						<div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
 							<Keyboard className="w-5 h-5 text-white" />
 						</div>
-						<div>
-							<h2 className="text-lg font-semibold text-white">Keyboard Shortcuts</h2>
-							<p className="text-sm text-gray-400">Navigate faster with these shortcuts</p>
-						</div>
-					</div>
-					<button
-						onClick={onClose}
-						className="p-2 text-gray-400 hover:text-gray-200 transition-colors"
-					>
-						<X className="w-5 h-5" />
-					</button>
-				</div>
+						Keyboard Shortcuts
+					</DialogTitle>
+					<DialogDescription className="text-gray-400">
+						Navigate faster with these shortcuts
+					</DialogDescription>
+				</DialogHeader>
 
 				{/* Shortcuts List */}
-				<div className="p-6 space-y-6">
+				<div className="space-y-6">
 					{Object.entries(groupedShortcuts).map(([category, categoryShortcuts]) => (
 						<div key={category}>
 							<h3 className="text-sm font-semibold text-white mb-3 pb-2 border-b border-gray-800">
@@ -120,12 +113,12 @@ export const KeyboardShortcutsHelp: React.FC<KeyboardShortcutsHelpProps> = ({
 				</div>
 
 				{/* Footer Tip */}
-				<div className="p-6 border-t border-gray-800 bg-gray-800/20">
+				<div className="mt-6 pt-6 border-t border-gray-800 bg-gray-800/20 -mx-6 -mb-6 px-6 pb-6">
 					<p className="text-xs text-gray-500 text-center">
 						💡 Shortcuts are disabled when typing in input fields
 					</p>
 				</div>
-			</div>
-		</div>
+			</DialogContent>
+		</Dialog>
 	);
 };

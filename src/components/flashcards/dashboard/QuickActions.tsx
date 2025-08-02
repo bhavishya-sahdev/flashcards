@@ -1,15 +1,24 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Plus, FolderPlus, Play, BarChart3, Settings } from 'lucide-react'
+import { Plus, FolderPlus, Play, BarChart3, Settings, Sparkles } from 'lucide-react'
 import { DashboardCard } from './DashboardCard'
 import { CreateFolderModal } from '../CreateFolderModal'
+import { FolderGenerator } from '../FolderGenerator'
 import { useFolders } from '@/hooks/useFolders'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog'
 
 export function QuickActions() {
 	const [showCreateModal, setShowCreateModal] = useState(false)
+	const [showGenerateModal, setShowGenerateModal] = useState(false)
 	const { createFolder } = useFolders()
 	const router = useRouter()
 
@@ -23,14 +32,26 @@ export function QuickActions() {
 		}
 	}
 
+	const handleGeneratedFolder = (folder: any) => {
+		setShowGenerateModal(false)
+		router.push(`/folders/${folder.id}`)
+	}
+
 	const actions = [
 		{
+			title: 'AI Generate Folder',
+			description: 'Create a folder with AI-generated flashcards',
+			icon: Sparkles,
+			iconColor: 'text-white',
+			onClick: () => setShowGenerateModal(true),
+			primary: true
+		},
+		{
 			title: 'New Folder',
-			description: 'Create a new study folder',
+			description: 'Create an empty study folder',
 			icon: FolderPlus,
 			iconColor: 'text-blue-400',
-			onClick: () => setShowCreateModal(true),
-			primary: true
+			onClick: () => setShowCreateModal(true)
 		},
 		{
 			title: 'Quick Study',
@@ -96,6 +117,16 @@ export function QuickActions() {
 				onClose={() => setShowCreateModal(false)}
 				onCreateFolder={handleCreateFolder}
 			/>
+
+			<Dialog open={showGenerateModal} onOpenChange={setShowGenerateModal}>
+				<DialogContent className="bg-gray-900 text-white max-w-2xl max-h-[90vh] overflow-y-auto border-0">
+					<FolderGenerator
+						onFolderGenerated={handleGeneratedFolder}
+						onCancel={() => setShowGenerateModal(false)}
+						mounted={true}
+					/>
+				</DialogContent>
+			</Dialog>
 		</>
 	)
 }
