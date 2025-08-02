@@ -6,8 +6,7 @@ import { SignInDialog } from '@/components/auth/sign-in-dialog';
 import { SignUpDialog } from '@/components/auth/sign-up-dialog';
 import { BackgroundAnimation } from '@/components/flashcards/BackgroundAnimation';
 import { CodeEditor } from '@/components/flashcards/CodeEditor';
-import { FlashcardCreator } from '@/components/flashcards/FlashcardCreator';
-import { FlashcardGenerator } from '@/components/flashcards/FlashcardGenerator';
+import { UnifiedFlashcardModal } from '@/components/flashcards/UnifiedFlashcardModal';
 import { FlashcardDisplay } from '@/components/flashcards/FlashcardsDisplay';
 import { FlashcardListView } from '@/components/flashcards/FlashcardListView';
 import { BulkManagementToolbar } from '@/components/flashcards/BulkManagementToolbar';
@@ -32,10 +31,6 @@ import React, { useState, useEffect } from 'react';
 import { Loader2, AlertCircle, ArrowLeft, Brain, Code, BookOpen, Target, BarChart3, Eye, Lock, Plus, HelpCircle, CheckSquare, Download, List, Square, Sparkles } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import {
-    Dialog,
-    DialogContent,
-} from '@/components/ui/dialog';
 
 const FlashcardFolderPage = () => {
     const params = useParams<{ folderId: string }>();
@@ -53,8 +48,7 @@ const FlashcardFolderPage = () => {
     const [mounted, setMounted] = useState(false);
     const [studyMode, setStudyMode] = useState<'study' | 'browse' | 'analytics'>('study');
     const [showStudySession, setShowStudySession] = useState(false);
-    const [showCreateForm, setShowCreateForm] = useState(false);
-    const [showGenerator, setShowGenerator] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
     const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
     // View mode state (list view is now default)
@@ -147,13 +141,8 @@ const FlashcardFolderPage = () => {
             },
             // Actions
             'n': {
-                handler: () => setShowCreateForm(true),
+                handler: () => setShowCreateModal(true),
                 description: 'New flashcard',
-                category: 'Actions'
-            },
-            'g': {
-                handler: () => setShowGenerator(true),
-                description: 'AI Generate flashcards',
                 category: 'Actions'
             },
             'e': {
@@ -170,10 +159,8 @@ const FlashcardFolderPage = () => {
                 handler: () => {
                     if (showKeyboardHelp) {
                         setShowKeyboardHelp(false);
-                    } else if (showCreateForm) {
-                        setShowCreateForm(false);
-                    } else if (showGenerator) {
-                        setShowGenerator(false);
+                    } else if (showCreateModal) {
+                        setShowCreateModal(false);
                     } else if (viewMode === 'list' && selectedCards.size > 0) {
                         setSelectedCards(new Set());
                     } else if (viewMode === 'single') {
@@ -254,7 +241,7 @@ const FlashcardFolderPage = () => {
             for (const cardData of generatedCards) {
                 await createFlashcard(cardData, currentFolder.id);
             }
-            setShowGenerator(false);
+            // Flashcards created successfully
         } catch (error) {
             setErrorMessage('Failed to create generated flashcards. Please try again.');
         }
@@ -429,8 +416,7 @@ const FlashcardFolderPage = () => {
                 {currentFolder && (
                     <FolderDashboardHeader
                         folder={currentFolder}
-                        onAddCard={() => setShowCreateForm(true)}
-                        onGenerateCards={() => setShowGenerator(true)}
+                        onCreateCard={() => setShowCreateModal(true)}
                         className="mb-8"
                     />
                 )}
@@ -675,31 +661,19 @@ const FlashcardFolderPage = () => {
                 )}
 
 
-                {/* Create Flashcard Modal */}
-                <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
-                    <DialogContent className="bg-gray-900 text-white max-w-2xl max-h-[90vh] overflow-y-auto border-0">
-                        {currentFolder && <FlashcardCreator
-                            onCreateFlashcard={(flashcard) => {
-                                handleCreateFlashcard(flashcard);
-                                setShowCreateForm(false);
-                            }}
-                            mounted={mounted}
-                            onCancel={() => setShowCreateForm(false)}
-                        />}
-                    </DialogContent>
-                </Dialog>
-
-                {/* AI Flashcard Generator Modal */}
-                <Dialog open={showGenerator} onOpenChange={setShowGenerator}>
-                    <DialogContent className="bg-gray-900 text-white max-w-2xl max-h-[90vh] overflow-y-auto border-0">
-                        {currentFolder && <FlashcardGenerator
-                            folderId={currentFolder.id}
-                            onCardsGenerated={handleGeneratedCards}
-                            onCancel={() => setShowGenerator(false)}
-                            mounted={mounted}
-                        />}
-                    </DialogContent>
-                </Dialog>
+                {/* Unified Flashcard Creation Modal */}
+                {currentFolder && (
+                    <UnifiedFlashcardModal
+                        isOpen={showCreateModal}
+                        onClose={() => setShowCreateModal(false)}
+                        folderId={currentFolder.id}
+                        onCreateFlashcard={(flashcard) => {
+                            handleCreateFlashcard(flashcard);
+                        }}
+                        onCardsGenerated={handleGeneratedCards}
+                        mounted={mounted}
+                    />
+                )}
 
                 {errorMessage && (
                     <ErrorNotification

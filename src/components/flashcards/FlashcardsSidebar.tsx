@@ -17,7 +17,7 @@ import {
 	SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { useFolders } from '@/hooks/useFolders'
-import { CreateFolderModal } from './CreateFolderModal'
+import { UnifiedFolderModal } from './UnifiedFolderModal'
 
 export function FlashcardsSidebar() {
 	const pathname = usePathname()
@@ -43,6 +43,11 @@ export function FlashcardsSidebar() {
 			console.error('Failed to create folder:', error)
 			throw error
 		}
+	}
+
+	const handleFolderGenerated = (folder: { id: string; name: string; description: string; flashcardCount: number }) => {
+		// Navigate to the newly generated folder
+		router.push(`/folders/${folder.id}`)
 	}
 
 	const mainMenuItems = [
@@ -146,10 +151,11 @@ export function FlashcardsSidebar() {
 				</SidebarGroup>
 			</SidebarContent>
 
-			<CreateFolderModal
+			<UnifiedFolderModal
 				isOpen={showCreateModal}
 				onClose={() => setShowCreateModal(false)}
 				onCreateFolder={handleCreateFolder}
+				onFolderGenerated={handleFolderGenerated}
 				loading={loading}
 			/>
 		</Sidebar>
