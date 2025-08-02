@@ -132,8 +132,8 @@ export function FlashcardsSidebar() {
 										>
 											<Link href={`/folders/${folder.id}`}>
 												<FolderOpen className="w-4 h-4" />
-												<span>{folder.name}</span>
-												<span className="ml-auto text-xs text-muted-foreground">
+												<span className='line-clamp-1' title={folder.name}>{folder.name}</span>
+												<span className="ml-auto shrink-0 text-xs text-muted-foreground">
 													{folder.flashcards.length}
 												</span>
 											</Link>

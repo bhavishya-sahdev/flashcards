@@ -109,7 +109,7 @@ export const FlashcardGenerator: React.FC<FlashcardGeneratorProps> = ({
 
   if (step === 'preview') {
     return (
-      <div className="bg-gray-900 border border-gray-800">
+      <div className="bg-gray-900">
         <div className="p-6 border-b border-gray-800">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
@@ -174,7 +174,7 @@ export const FlashcardGenerator: React.FC<FlashcardGeneratorProps> = ({
   }
 
   return (
-    <div className="bg-gray-900 border border-gray-800">
+    <div className="bg-gray-900">
       <div className="p-6 border-b border-gray-800">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
@@ -240,11 +240,10 @@ export const FlashcardGenerator: React.FC<FlashcardGeneratorProps> = ({
                     key={level}
                     onClick={() => setFormData({ ...formData, difficulty: level })}
                     disabled={isGenerating}
-                    className={`flex-1 px-3 py-3 border text-sm font-medium transition-all duration-200 ${
-                      formData.difficulty === level
-                        ? getDifficultyColor(level)
-                        : 'border-gray-700 bg-gray-800/50 text-gray-400 hover:border-gray-600'
-                    } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`flex-1 px-3 py-3 border text-sm font-medium transition-all duration-200 ${formData.difficulty === level
+                      ? getDifficultyColor(level)
+                      : 'border-gray-700 bg-gray-800/50 text-gray-400 hover:border-gray-600'
+                      } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     {level}
                   </button>
@@ -265,16 +264,14 @@ export const FlashcardGenerator: React.FC<FlashcardGeneratorProps> = ({
             <button
               onClick={() => setFormData({ ...formData, includeCode: !formData.includeCode })}
               disabled={isGenerating}
-              className={`w-12 h-6 rounded-full border-2 transition-colors ${
-                formData.includeCode
-                  ? 'bg-blue-600 border-blue-600'
-                  : 'bg-gray-700 border-gray-600'
-              } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-12 h-6 rounded-full border-2 transition-colors ${formData.includeCode
+                ? 'bg-blue-600 border-blue-600'
+                : 'bg-gray-700 border-gray-600'
+                } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <div
-                className={`w-4 h-4 bg-white rounded-full transition-transform ${
-                  formData.includeCode ? 'translate-x-6' : 'translate-x-0'
-                }`}
+                className={`w-4 h-4 bg-white rounded-full transition-transform ${formData.includeCode ? 'translate-x-6' : 'translate-x-0'
+                  }`}
               />
             </button>
           </div>

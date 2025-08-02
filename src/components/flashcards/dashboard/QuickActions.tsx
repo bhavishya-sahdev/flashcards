@@ -119,7 +119,7 @@ export function QuickActions() {
 			/>
 
 			<Dialog open={showGenerateModal} onOpenChange={setShowGenerateModal}>
-				<DialogContent className="bg-gray-900 text-white max-w-2xl max-h-[90vh] overflow-y-auto border-0">
+				<DialogContent className="bg-gray-900 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
 					<FolderGenerator
 						onFolderGenerated={handleGeneratedFolder}
 						onCancel={() => setShowGenerateModal(false)}

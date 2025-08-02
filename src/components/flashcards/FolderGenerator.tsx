@@ -160,11 +160,10 @@ export const FolderGenerator: React.FC<FolderGeneratorProps> = ({
                     key={level}
                     onClick={() => setFormData({ ...formData, difficulty: level })}
                     disabled={isGenerating}
-                    className={`flex-1 px-3 py-3 border text-sm font-medium transition-all duration-200 ${
-                      formData.difficulty === level
-                        ? getDifficultyColor(level)
-                        : 'border-gray-700 bg-gray-800/50 text-gray-400 hover:border-gray-600'
-                    } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`flex-1 px-3 py-3 border text-sm font-medium transition-all duration-200 ${formData.difficulty === level
+                      ? getDifficultyColor(level)
+                      : 'border-gray-700 bg-gray-800/50 text-gray-400 hover:border-gray-600'
+                      } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     {level}
                   </button>
@@ -185,16 +184,14 @@ export const FolderGenerator: React.FC<FolderGeneratorProps> = ({
             <button
               onClick={() => setFormData({ ...formData, includeCode: !formData.includeCode })}
               disabled={isGenerating}
-              className={`w-12 h-6 rounded-full border-2 transition-colors ${
-                formData.includeCode
-                  ? 'bg-blue-600 border-blue-600'
-                  : 'bg-gray-700 border-gray-600'
-              } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-12 h-6 rounded-full border-2 transition-colors ${formData.includeCode
+                ? 'bg-blue-600 border-blue-600'
+                : 'bg-gray-700 border-gray-600'
+                } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <div
-                className={`w-4 h-4 bg-white rounded-full transition-transform ${
-                  formData.includeCode ? 'translate-x-6' : 'translate-x-0'
-                }`}
+                className={`w-4 h-4 bg-white rounded-full transition-transform ${formData.includeCode ? 'translate-x-6' : 'translate-x-0'
+                  }`}
               />
             </button>
           </div>
