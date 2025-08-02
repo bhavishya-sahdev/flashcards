@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+# Sitemap: https://bhavishya.dev/sitemap.xml
+
+# Disallow common private/admin paths
+Disallow: /admin/
+Disallow: /private/
+Disallow: /login/
+Disallow: /api/
+Disallow: /*.json$
+
+# Add reasonable crawl delay
+Crawl-delay: 10
