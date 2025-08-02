@@ -33,8 +33,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { topic, count, difficulty, includeCode, folderId }: GenerateFlashcardsRequest =
-      await request.json();
+    const {
+      topic,
+      count,
+      difficulty,
+      includeCode,
+      folderId,
+    }: GenerateFlashcardsRequest = await request.json();
 
     if (!topic?.trim() || !count || count < 1 || count > 10) {
       return NextResponse.json(
@@ -83,13 +88,15 @@ export async function POST(request: NextRequest) {
 }
 
 const flashcardSchema = z.object({
-  flashcards: z.array(z.object({
-    question: z.string().min(1),
-    answer: z.string().min(1),
-    category: z.string(),
-    difficulty: z.enum(["Easy", "Medium", "Hard"]),
-    codeTemplate: z.string().optional(),
-  }))
+  flashcards: z.array(
+    z.object({
+      question: z.string().min(1),
+      answer: z.string().min(1),
+      category: z.string(),
+      difficulty: z.enum(["Easy", "Medium", "Hard"]),
+      codeTemplate: z.string().optional(),
+    })
+  ),
 });
 
 async function generateFlashcardsWithAI({
@@ -115,7 +122,7 @@ async function generateFlashcardsWithAI({
 
   try {
     const result = await generateObject({
-      model: openai('gpt-4o-mini'),
+      model: openai("gpt-4.1-mini"),
       prompt: `Generate ${count} flashcard(s) about "${topic}" with ${difficulty} difficulty level.
 
 ${difficultyInstruction}
@@ -141,7 +148,9 @@ Include Code: ${includeCode}`,
       answer: card.answer,
       category: card.category || topic,
       difficulty: card.difficulty,
-      codeTemplate: card.codeTemplate || (includeCode ? getDefaultCodeTemplate() : getDefaultCodeTemplate()),
+      codeTemplate:
+        card.codeTemplate ||
+        (includeCode ? getDefaultCodeTemplate() : getDefaultCodeTemplate()),
     }));
   } catch (error) {
     console.error("AI generation error:", error);
@@ -164,7 +173,9 @@ function generateFallbackFlashcards(
       answer: `This is a generated answer about ${topic}. The specific details would depend on the context and application of this topic in software engineering.`,
       category: topic,
       difficulty,
-      codeTemplate: includeCode ? getDefaultCodeTemplate() : getDefaultCodeTemplate(),
+      codeTemplate: includeCode
+        ? getDefaultCodeTemplate()
+        : getDefaultCodeTemplate(),
     });
   }
 

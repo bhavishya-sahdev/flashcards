@@ -19,13 +19,15 @@ const folderSchema = z.object({
     name: z.string().min(1),
     description: z.string().min(1),
   }),
-  flashcards: z.array(z.object({
-    question: z.string().min(1),
-    answer: z.string().min(1),
-    category: z.string(),
-    difficulty: z.enum(["Easy", "Medium", "Hard"]),
-    codeTemplate: z.string().optional(),
-  }))
+  flashcards: z.array(
+    z.object({
+      question: z.string().min(1),
+      answer: z.string().min(1),
+      category: z.string(),
+      difficulty: z.enum(["Easy", "Medium", "Hard"]),
+      codeTemplate: z.string().optional(),
+    })
+  ),
 });
 
 export async function POST(request: NextRequest) {
@@ -130,7 +132,7 @@ async function generateFolderWithAI({
 
   try {
     const result = await generateObject({
-      model: openai('gpt-4o-mini'),
+      model: openai("gpt-4.1-mini"),
       prompt: `Create a comprehensive study folder about "${topic}" with ${cardCount} flashcards at ${difficulty} difficulty level.
 
 ${difficultyInstruction}
@@ -161,7 +163,9 @@ Include Code: ${includeCode}`,
         answer: card.answer,
         category: card.category || topic,
         difficulty: card.difficulty,
-        codeTemplate: card.codeTemplate || (includeCode ? getDefaultCodeTemplate() : getDefaultCodeTemplate()),
+        codeTemplate:
+          card.codeTemplate ||
+          (includeCode ? getDefaultCodeTemplate() : getDefaultCodeTemplate()),
       })),
     };
   } catch (error) {
@@ -198,7 +202,9 @@ function generateFallbackFolder(
       answer: `This is a generated answer about ${topic}. The specific details would depend on the context and application of this topic in software engineering.`,
       category: topic,
       difficulty,
-      codeTemplate: includeCode ? getDefaultCodeTemplate() : getDefaultCodeTemplate(),
+      codeTemplate: includeCode
+        ? getDefaultCodeTemplate()
+        : getDefaultCodeTemplate(),
     });
   }
 
