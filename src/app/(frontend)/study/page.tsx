@@ -3,15 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { Loader2, AlertCircle, Target, BookOpen, ArrowLeft, Play, Trophy, Clock, Brain, Lock, FolderOpen } from 'lucide-react';
 import { useSession } from '@/lib/auth-client';
-import { SignInDialog } from '@/components/auth/sign-in-dialog';
-import { SignUpDialog } from '@/components/auth/sign-up-dialog';
 import { BackgroundAnimation } from '@/components/flashcards/BackgroundAnimation';
 import { GlobalStyles } from '@/components/flashcards/GlobalStyles';
 import { ErrorNotification } from '@/components/flashcards/ErrorNotification';
 import { StudySession } from '@/components/flashcards/StudySession';
 import { DashboardCard } from '@/components/flashcards/dashboard/DashboardCard';
-import { SidebarTrigger } from '@/components/ui/sidebar';
-import Navbar from '@/components/Navbar';
 import Link from 'next/link';
 
 interface QuickStudyData {
@@ -99,13 +95,6 @@ const QuickStudyPage = () => {
 			<div className="min-h-screen bg-black text-white overflow-hidden" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
 				<GlobalStyles />
 				<BackgroundAnimation />
-				<div className="flex items-center gap-2 mb-4">
-					<SidebarTrigger className="text-white hover:text-gray-300 mx-4" />
-					<Navbar items={[{ label: 'Blog', href: "/blog" }]} itemsRight={[<div className='flex gap-2 items-center' key="auth">
-						<SignInDialog triggerLabel='Sign in' />
-						<SignUpDialog triggerLabel='Sign up' />
-					</div>]} />
-				</div>
 
 				<div className="relative z-10 max-w-4xl mx-auto px-6 py-16 text-center">
 					<div className="mb-8" style={staggerDelay(0)}>
@@ -131,10 +120,6 @@ const QuickStudyPage = () => {
 							Get access to spaced repetition across all your folders, progress tracking, and personalized study sessions.
 						</p>
 						
-						<div className="flex items-center justify-center gap-4 mb-8">
-							<SignInDialog triggerLabel="Sign In" />
-							<SignUpDialog triggerLabel="Sign Up" />
-						</div>
 
 						<div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-2xl mx-auto pt-6 border-t border-gray-800">
 							<div className="text-center">
@@ -199,12 +184,6 @@ const QuickStudyPage = () => {
 			<div className="min-h-screen bg-black text-white overflow-hidden" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
 				<GlobalStyles />
 				<BackgroundAnimation />
-				<div className="flex items-center gap-2 mb-4">
-					<SidebarTrigger className="text-white hover:text-gray-300 mx-4" />
-					<Navbar items={[{ label: 'Blog', href: "/blog" }]} itemsRight={[<div className='flex gap-2 items-center' key="auth">
-						<span className='text-sm font-medium text-gray-300'>Hey, {data.user.name.split(" ")[0]}!</span>
-					</div>]} />
-				</div>
 
 				<div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
 					<DashboardCard title="Quick Study Session" icon={Target} iconColor="text-emerald-400">
@@ -228,12 +207,6 @@ const QuickStudyPage = () => {
 		<div className="min-h-screen bg-black text-white overflow-hidden" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
 			<GlobalStyles />
 			<BackgroundAnimation />
-			<div className="flex items-center gap-2 mb-4">
-				<SidebarTrigger className="text-white hover:text-gray-300 mx-4" />
-				<Navbar items={[{ label: 'Blog', href: "/blog" }]} itemsRight={[<div className='flex gap-2 items-center' key="auth">
-					<span className='text-sm font-medium text-gray-300'>Hey, {data.user.name.split(" ")[0]}!</span>
-				</div>]} />
-			</div>
 
 			<div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
 				{/* Header */}

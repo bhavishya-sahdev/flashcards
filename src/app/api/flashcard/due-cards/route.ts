@@ -4,6 +4,7 @@ import { flashcards, flashcardFolders } from "@/db/schema/flashcards";
 import { eq, and } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { getDueCards, categorizeCards } from "@/lib/spaced-repetition";
+import { notifyDueCards } from "@/lib/notifications";
 
 export async function GET(request: NextRequest) {
 	try {
@@ -66,6 +67,15 @@ export async function GET(request: NextRequest) {
 		
 		// Get only the due cards (including learning cards)
 		const dueCards = getDueCards(formattedCards, now);
+
+		// Send notification if there are many due cards
+		if (dueCards.length >= 10) {
+			try {
+				await notifyDueCards(session.user.id, dueCards.length, folder.name);
+			} catch (error) {
+				console.error("Error sending due cards notification:", error);
+			}
+		}
 
 		return NextResponse.json({
 			folder: {

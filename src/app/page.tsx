@@ -6,8 +6,6 @@ import { SignUpDialog } from '@/components/auth/sign-up-dialog';
 import { BackgroundAnimation } from '@/components/flashcards/BackgroundAnimation';
 import { GlobalStyles } from '@/components/flashcards/GlobalStyles';
 import { ErrorNotification } from '@/components/flashcards/ErrorNotification';
-import Navbar from '@/components/Navbar';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useSession } from '@/lib/auth-client';
 import { QuickStats } from '@/components/flashcards/dashboard/QuickStats';
 import { QuickActions } from '@/components/flashcards/dashboard/QuickActions';
@@ -156,19 +154,6 @@ const Homepage = () => {
             <div className="min-h-screen bg-black text-white overflow-hidden" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
                 <GlobalStyles />
                 <BackgroundAnimation />
-                <div className="flex items-center gap-2 mb-4">
-                    <SidebarTrigger className="text-white hover:text-gray-300" />
-                    <Navbar items={[{ label: 'Blog', href: "/blog" }]} itemsRight={[<div className='flex gap-2 items-center' key="auth">
-                        {data ? (
-                            <span className='text-sm font-medium text-gray-300'>Hey, {data.user.name.split(" ")[0]}!</span>
-                        ) : (
-                            <>
-                                <SignInDialog triggerLabel='Sign in' />
-                                <SignUpDialog triggerLabel='Sign up' />
-                            </>
-                        )}
-                    </div>]} />
-                </div>
 
                 <div className="relative z-10 max-w-4xl mx-auto px-6 py-16 text-center">
                     <div className="mb-8">
@@ -228,9 +213,6 @@ const Homepage = () => {
         <div className="min-h-screen bg-black text-white overflow-hidden" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
             <GlobalStyles />
             <BackgroundAnimation />
-            <div className="flex items-center gap-2 mb-4">
-                <SidebarTrigger className="text-white hover:text-gray-300 mx-4" />
-            </div>
 
             <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
                 {/* Dashboard Header */}
@@ -291,7 +273,7 @@ const Homepage = () => {
                                     </div>
                                 ) : (
                                     <div className="grid md:grid-cols-2 gap-4">
-                                        {folders.map((folder, index) => (
+                                        {folders.map((folder) => (
                                             <FolderCard
                                                 key={folder.id}
                                                 folder={folder}

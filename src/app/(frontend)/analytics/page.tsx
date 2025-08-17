@@ -16,10 +16,6 @@ import {
 } from 'lucide-react'
 import { BackgroundAnimation } from '@/components/flashcards/BackgroundAnimation'
 import { GlobalStyles } from '@/components/flashcards/GlobalStyles'
-import { SidebarTrigger } from '@/components/ui/sidebar'
-import Navbar from '@/components/Navbar'
-import { SignInDialog } from '@/components/auth/sign-in-dialog'
-import { SignUpDialog } from '@/components/auth/sign-up-dialog'
 import { useSession } from '@/lib/auth-client'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { StatsCard } from '@/components/flashcards/analytics/StatsCard'
@@ -36,15 +32,6 @@ export default function AnalyticsPage() {
 			<div className="min-h-screen bg-black text-white overflow-hidden" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
 				<GlobalStyles />
 				<BackgroundAnimation />
-				<div className="flex items-center gap-2 mb-4">
-					<SidebarTrigger className="text-white hover:text-gray-300" />
-					<Navbar items={[{ label: 'Blog', href: "/blog" }]} itemsRight={[<div className='flex gap-2 items-center' key="auth">
-						<>
-							<SignInDialog triggerLabel='Sign in' />
-							<SignUpDialog triggerLabel='Sign up' />
-						</>
-					</div>]} />
-				</div>
 
 				<div className="relative z-10 max-w-6xl mx-auto px-6 py-16 text-center">
 					<div className="mb-16">
@@ -74,10 +61,6 @@ export default function AnalyticsPage() {
 						<p className="text-gray-400 mb-6">
 							Track your study progress, performance metrics, and learning insights with detailed analytics.
 						</p>
-						<div className="flex items-center justify-center gap-4">
-							<SignInDialog triggerLabel="Sign In" />
-							<SignUpDialog triggerLabel="Sign Up" />
-						</div>
 					</div>
 				</div>
 			</div>
@@ -89,12 +72,6 @@ export default function AnalyticsPage() {
 			<div className="min-h-screen bg-black text-white overflow-hidden" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
 				<GlobalStyles />
 				<BackgroundAnimation />
-				<div className="flex items-center gap-2 mb-4">
-					<SidebarTrigger className="text-white hover:text-gray-300" />
-					<Navbar items={[{ label: 'Blog', href: "/blog" }]} itemsRight={[<div className='flex gap-2 items-center' key="auth">
-						<span className='text-sm font-medium text-gray-300'>Hey, {data?.user.name.split(" ")[0]}!</span>
-					</div>]} />
-				</div>
 
 				<div className="relative z-10 max-w-6xl mx-auto px-6 py-16 flex items-center justify-center">
 					<div className="text-center">
@@ -111,12 +88,6 @@ export default function AnalyticsPage() {
 			<div className="min-h-screen bg-black text-white overflow-hidden" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
 				<GlobalStyles />
 				<BackgroundAnimation />
-				<div className="flex items-center gap-2 mb-4">
-					<SidebarTrigger className="text-white hover:text-gray-300" />
-					<Navbar items={[{ label: 'Blog', href: "/blog" }]} itemsRight={[<div className='flex gap-2 items-center' key="auth">
-						<span className='text-sm font-medium text-gray-300'>Hey, {data?.user.name.split(" ")[0]}!</span>
-					</div>]} />
-				</div>
 
 				<div className="relative z-10 max-w-6xl mx-auto px-6 py-16 text-center">
 					<div className="bg-gray-900/50 border border-red-800 p-8 max-w-md mx-auto">
@@ -134,12 +105,6 @@ export default function AnalyticsPage() {
 		<div className="min-h-screen bg-black text-white overflow-hidden" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
 			<GlobalStyles />
 			<BackgroundAnimation />
-			<div className="flex items-center gap-2 mb-4">
-				<SidebarTrigger className="text-white hover:text-gray-300" />
-				<Navbar items={[{ label: 'Blog', href: "/blog" }]} itemsRight={[<div className='flex gap-2 items-center' key="auth">
-					<span className='text-sm font-medium text-gray-300'>Hey, {data?.user.name.split(" ")[0]}!</span>
-				</div>]} />
-			</div>
 
 			<div className="relative z-10 max-w-7xl mx-auto px-6 py-16">
 				{/* Header */}

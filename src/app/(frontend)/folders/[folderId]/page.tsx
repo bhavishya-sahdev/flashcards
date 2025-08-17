@@ -2,8 +2,6 @@
 
 import { useFlashcards } from '@/hooks/useFlashcards';
 import { useFolders } from '@/hooks/useFolders';
-import { SignInDialog } from '@/components/auth/sign-in-dialog';
-import { SignUpDialog } from '@/components/auth/sign-up-dialog';
 import { BackgroundAnimation } from '@/components/flashcards/BackgroundAnimation';
 import { CodeEditor } from '@/components/flashcards/CodeEditor';
 import { UnifiedFlashcardModal } from '@/components/flashcards/UnifiedFlashcardModal';
@@ -21,8 +19,6 @@ import { ErrorNotification } from '@/components/flashcards/ErrorNotification';
 import { KeyboardShortcutsHelp } from '@/components/flashcards/KeyboardShortcutsHelp';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useSwipeGestures } from '@/hooks/useSwipeGestures';
-import Navbar from '@/components/Navbar';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 import { FolderDashboardHeader } from '@/components/flashcards/dashboard/FolderDashboardHeader';
 import { DashboardCard } from '@/components/flashcards/dashboard/DashboardCard';
 import { useSession } from '@/lib/auth-client';
@@ -397,19 +393,6 @@ const FlashcardFolderPage = () => {
         <div className="min-h-screen bg-black text-white overflow-hidden" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
             <GlobalStyles />
             <BackgroundAnimation />
-            <div className="flex items-center gap-2 mb-4">
-                <SidebarTrigger className="text-white hover:text-gray-300 mx-4" />
-                <Navbar items={[{ label: 'Blog', href: "/blog" }]} itemsRight={[<div className='flex gap-2 items-center' key="auth">
-                    {data ? (
-                        <span className='text-sm font-medium text-gray-300'>Hey, {data.user.name.split(" ")[0]}!</span>
-                    ) : (
-                        <>
-                            <SignInDialog triggerLabel='Sign in' />
-                            <SignUpDialog triggerLabel='Sign up' />
-                        </>
-                    )}
-                </div>]} />
-            </div>
 
             <div className="relative z-10 max-w-7xl mx-auto px-6 py-8" ref={swipeRef}>
                 {/* Dashboard Header */}
@@ -506,10 +489,6 @@ const FlashcardFolderPage = () => {
                                 <p className="text-gray-400 mb-6 max-w-md mx-auto">
                                     Track your learning progress, get personalized study schedules, and boost your retention with our advanced spaced repetition algorithm.
                                 </p>
-                                <div className="flex items-center justify-center gap-4">
-                                    <SignInDialog triggerLabel="Sign In" />
-                                    <SignUpDialog triggerLabel="Sign Up" />
-                                </div>
                                 <div className="mt-8 pt-6 border-t border-gray-800">
                                     <p className="text-sm text-gray-500 mb-4">What you'll unlock:</p>
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
@@ -649,10 +628,6 @@ const FlashcardFolderPage = () => {
                                 <p className="text-gray-400 mb-6 max-w-md mx-auto">
                                     Track your learning progress, accuracy rates, streaks, and detailed performance analytics.
                                 </p>
-                                <div className="flex items-center justify-center gap-4">
-                                    <SignInDialog triggerLabel="Sign In" />
-                                    <SignUpDialog triggerLabel="Sign Up" />
-                                </div>
                             </div>
                         ) : (
                             <StudyStats folderId={folderId} />

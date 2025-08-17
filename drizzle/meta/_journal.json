@@ -36,6 +36,20 @@
       "when": 1753953559849,
       "tag": "0004_dashing_rumiko_fujikawa",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1754232202832,
+      "tag": "0005_clear_wonder_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1755430106126,
+      "tag": "0006_clever_charles_xavier",
+      "breakpoints": true
     }
   ]
 }

@@ -105,3 +105,102 @@ export interface StudyStats {
   timeSpentToday: number; // in minutes
   timeSpentTotal: number; // in minutes
 }
+
+// Roadmap types
+export interface RoadmapTemplate {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  isPublic: boolean;
+  totalEstimatedTime?: number; // in hours
+  difficultyLevel: 'Beginner' | 'Intermediate' | 'Advanced';
+  tags: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  topics: RoadmapTopic[];
+}
+
+export interface RoadmapTopic {
+  id: string;
+  templateId: string;
+  name: string;
+  description: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  estimatedTimeHours: number;
+  orderIndex: number;
+  subtopics: string[];
+  practiceProblemsCount: number;
+  keyLearningPoints: string[];
+  prerequisiteTopicIds: string[];
+  linkedFolderId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserRoadmap {
+  id: string;
+  userId: string;
+  templateId: string;
+  isCustomized: boolean;
+  customName?: string;
+  customDescription?: string;
+  isActive: boolean;
+  startedAt?: Date;
+  targetCompletionDate?: Date;
+  totalTimeSpent: number; // in minutes
+  lastAccessedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  template: RoadmapTemplate;
+  topicProgress: UserTopicProgress[];
+}
+
+export interface UserTopicProgress {
+  id: string;
+  userId: string;
+  userRoadmapId: string;
+  topicId: string;
+  status: 'locked' | 'available' | 'in_progress' | 'completed';
+  progressPercentage: number; // 0-100
+  timeSpent: number; // in minutes
+  startedAt?: Date;
+  completedAt?: Date;
+  lastStudiedAt?: Date;
+  userNotes?: string;
+  isBookmarked: boolean;
+  practiceProblemsCompleted: number;
+  averageScore?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  topic: RoadmapTopic;
+}
+
+export interface RoadmapStudySession {
+  id: string;
+  userId: string;
+  userRoadmapId: string;
+  topicId: string;
+  sessionType: 'study' | 'practice' | 'review';
+  durationMinutes: number;
+  problemsAttempted: number;
+  problemsCompleted: number;
+  averageScore?: number;
+  notes?: string;
+  mood?: string;
+  startedAt: Date;
+  endedAt?: Date;
+  createdAt: Date;
+}
+
+export interface RoadmapProgressSummary {
+  totalTopics: number;
+  completedTopics: number;
+  inProgressTopics: number;
+  availableTopics: number;
+  lockedTopics: number;
+  totalTimeSpent: number; // in minutes
+  averageScore?: number;
+  currentStreak: number; // consecutive days studied
+  lastStudyDate?: Date;
+}

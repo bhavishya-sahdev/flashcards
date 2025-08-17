@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
 import { flashcardFolders } from "./flashcards";
+import { notifications, notificationPreferences } from "./notifications";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -18,8 +19,10 @@ export const user = pgTable("user", {
     .notNull(),
 });
 
-export const userRelations = relations(user, ({ many }) => ({
+export const userRelations = relations(user, ({ many, one }) => ({
   folders: many(flashcardFolders),
+  notifications: many(notifications),
+  notificationPreferences: one(notificationPreferences),
 }));
 
 export const session = pgTable("session", {

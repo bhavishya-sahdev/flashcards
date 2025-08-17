@@ -5,6 +5,7 @@ import { flashcards, flashcardReviews } from "@/db/schema/flashcards";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { calculateNextReview, ReviewQuality } from "@/lib/spaced-repetition";
+import { notifyStreakMilestone, notifyStreakBroken, notifyAchievement } from "@/lib/notifications";
 
 export async function POST(request: NextRequest) {
   try {
@@ -131,6 +132,62 @@ export async function POST(request: NextRequest) {
         intervalAfter: reviewResult.interval,
       })
       .returning();
+
+    // Check for streak notifications
+    if (wasCorrect && newStreakCount > (currentCard.streakCount || 0)) {
+      // Check for streak milestones
+      const milestones = [7, 14, 30, 50, 100, 200, 365];
+      if (milestones.includes(newStreakCount)) {
+        try {
+          await notifyStreakMilestone(session.user.id, newStreakCount);
+        } catch (error) {
+          console.error("Error sending streak milestone notification:", error);
+        }
+      }
+
+      // Check for achievements
+      if (newStreakCount === 10) {
+        try {
+          await notifyAchievement(
+            session.user.id,
+            "First Steps",
+            "You've answered 10 cards correctly in a row!",
+            { type: "streak", value: 10 }
+          );
+        } catch (error) {
+          console.error("Error sending achievement notification:", error);
+        }
+      } else if (newStreakCount === 50) {
+        try {
+          await notifyAchievement(
+            session.user.id,
+            "On Fire!",
+            "50 correct answers in a row - you're unstoppable!",
+            { type: "streak", value: 50 }
+          );
+        } catch (error) {
+          console.error("Error sending achievement notification:", error);
+        }
+      } else if (totalReviews === 100) {
+        try {
+          await notifyAchievement(
+            session.user.id,
+            "Century Club",
+            "You've reviewed 100 cards! Keep up the great work!",
+            { type: "reviews", value: 100 }
+          );
+        } catch (error) {
+          console.error("Error sending achievement notification:", error);
+        }
+      }
+    } else if (!wasCorrect && (currentCard.streakCount || 0) >= 7) {
+      // Notify about broken streak if it was significant
+      try {
+        await notifyStreakBroken(session.user.id, currentCard.streakCount || 0);
+      } catch (error) {
+        console.error("Error sending streak broken notification:", error);
+      }
+    }
 
     return NextResponse.json({
       success: true,

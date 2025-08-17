@@ -123,6 +123,13 @@
 
 /* Custom edgy effects */
 @layer utilities {
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
   .glow {
     text-shadow: 0 0 10px currentColor;
   }

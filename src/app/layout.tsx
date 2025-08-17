@@ -4,6 +4,7 @@ import "./globals.css";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { FlashcardsSidebar } from "@/components/flashcards/FlashcardsSidebar";
+import { TopBar } from "@/components/TopBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -76,6 +77,7 @@ export default function RootLayout({
         <SidebarProvider>
           <FlashcardsSidebar />
           <SidebarInset>
+            <TopBar showSearch={true} />
             {children}
           </SidebarInset>
         </SidebarProvider>

@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Home, BarChart3, Settings, FolderOpen, Plus, BookIcon } from 'lucide-react'
+import { Home, BarChart3, Settings, FolderOpen, Plus, BookIcon, Map, TrendingUp } from 'lucide-react'
 import {
 	Sidebar,
 	SidebarContent,
@@ -55,6 +55,16 @@ export function FlashcardsSidebar() {
 			title: 'Home',
 			icon: Home,
 			href: '/',
+		},
+		{
+			title: 'DSA Roadmap',
+			icon: Map,
+			href: '/roadmap',
+		},
+		{
+			title: 'Roadmap Analytics',
+			icon: TrendingUp,
+			href: '/roadmap/analytics',
 		},
 		{
 			title: 'Quick Study',
