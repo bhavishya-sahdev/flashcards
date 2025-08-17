@@ -5,6 +5,7 @@ import {
   timestamp,
   boolean,
   real,
+  json,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { user } from "./user";
@@ -140,5 +141,61 @@ export const studySessionsRelations = relations(
       references: [flashcardFolders.id],
     }),
     reviews: many(flashcardReviews),
+  })
+);
+
+// Quiz Results Tables
+export const quizSessions = pgTable("quiz_sessions", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  ownerId: text("owner_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  folderId: integer("folder_id")
+    .notNull()
+    .references(() => flashcardFolders.id, { onDelete: "cascade" }),
+
+  // Quiz Metadata
+  quizId: text("quiz_id").notNull(), // Generated quiz ID
+  title: text("title").notNull(),
+  description: text("description"),
+  
+  // Results
+  score: integer("score").notNull(), // Percentage score
+  totalQuestions: integer("total_questions").notNull(),
+  correctAnswers: integer("correct_answers").notNull(),
+  timeSpent: integer("time_spent").notNull(), // in milliseconds
+  
+  // Quiz Data (stored as JSON)
+  questions: json("questions").notNull(), // Quiz questions
+  answers: json("answers").notNull(), // User answers
+
+  // Metadata
+  startedAt: timestamp("started_at", { mode: "string" }).notNull(),
+  completedAt: timestamp("completed_at", { mode: "string" }).notNull(),
+  createdAt: timestamp("created_at", { mode: "string" }).defaultNow().notNull(),
+});
+
+export const quizSessionsRelations = relations(quizSessions, ({ one }) => ({
+  owner: one(user, {
+    fields: [quizSessions.ownerId],
+    references: [user.id],
+  }),
+  folder: one(flashcardFolders, {
+    fields: [quizSessions.folderId],
+    references: [flashcardFolders.id],
+  }),
+}));
+
+// Update existing relations to include quiz sessions
+export const flashcardFoldersRelationsUpdated = relations(
+  flashcardFolders,
+  ({ many, one }) => ({
+    owner: one(user, {
+      fields: [flashcardFolders.ownerId],
+      references: [user.id],
+    }),
+    flashcards: many(flashcards),
+    studySessions: many(studySessions),
+    quizSessions: many(quizSessions),
   })
 );

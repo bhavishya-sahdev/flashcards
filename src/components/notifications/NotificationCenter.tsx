@@ -39,6 +39,13 @@ export function NotificationCenter() {
         const data = await response.json();
         setNotifications(data.notifications);
         setUnreadCount(data.notifications.filter((n: Notification) => !n.read).length);
+      } else if (response.status === 401) {
+        // User is not authenticated - this is expected behavior
+        console.log("User not authenticated, notifications will be empty");
+        setNotifications([]);
+        setUnreadCount(0);
+      } else {
+        console.error("Error fetching notifications:", response.status, response.statusText);
       }
     } catch (error) {
       console.error("Error fetching notifications:", error);

@@ -10,6 +10,10 @@ import { FlashcardListView } from '@/components/flashcards/FlashcardListView';
 import { BulkManagementToolbar } from '@/components/flashcards/BulkManagementToolbar';
 import { BulkConfirmDialog } from '@/components/flashcards/BulkConfirmDialog';
 import { GlobalStyles } from '@/components/flashcards/GlobalStyles';
+import { QuizGeneratorModal } from '@/components/flashcards/QuizGeneratorModal';
+import { QuizSession } from '@/components/flashcards/QuizSession';
+import { QuizHistory } from '@/components/flashcards/QuizHistory';
+import { QuizResultDetails } from '@/components/flashcards/QuizResultDetails';
 import { Navigation } from '@/components/flashcards/Navigation';
 import { StudyGuide } from '@/components/flashcards/StudyGuide';
 import { StudySession } from '@/components/flashcards/StudySession';
@@ -24,7 +28,7 @@ import { DashboardCard } from '@/components/flashcards/dashboard/DashboardCard';
 import { useSession } from '@/lib/auth-client';
 import { Flashcard } from '@/lib/types';
 import React, { useState, useEffect } from 'react';
-import { Loader2, AlertCircle, ArrowLeft, Brain, Code, BookOpen, Target, BarChart3, Eye, Lock, Plus, HelpCircle, CheckSquare, Download, List, Square, Sparkles } from 'lucide-react';
+import { Loader2, AlertCircle, ArrowLeft, Brain, Code, BookOpen, Target, BarChart3, Eye, Lock, Plus, HelpCircle, CheckSquare, Download, List, Square, Sparkles, Trophy } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -42,10 +46,15 @@ const FlashcardFolderPage = () => {
 
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [mounted, setMounted] = useState(false);
-    const [studyMode, setStudyMode] = useState<'study' | 'browse' | 'analytics'>('study');
+    const [studyMode, setStudyMode] = useState<'study' | 'browse' | 'analytics' | 'quiz-history'>('study');
     const [showStudySession, setShowStudySession] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+    const [showQuizGenerator, setShowQuizGenerator] = useState(false);
+    const [currentQuiz, setCurrentQuiz] = useState<any>(null);
+    const [showQuizSession, setShowQuizSession] = useState(false);
+    const [currentQuizResultId, setCurrentQuizResultId] = useState<number | null>(null);
+    const [showQuizDetails, setShowQuizDetails] = useState(false);
 
     // View mode state (list view is now default)
     const [viewMode, setViewMode] = useState<'list' | 'single'>('list');
@@ -58,7 +67,7 @@ const FlashcardFolderPage = () => {
 
     // Reset to browse mode if user logs out while in protected modes
     useEffect(() => {
-        if (!data && (studyMode === 'study' || studyMode === 'analytics')) {
+        if (!data && (studyMode === 'study' || studyMode === 'analytics' || studyMode === 'quiz-history')) {
             setStudyMode('browse');
         }
     }, [data, studyMode]);
@@ -157,6 +166,10 @@ const FlashcardFolderPage = () => {
                         setShowKeyboardHelp(false);
                     } else if (showCreateModal) {
                         setShowCreateModal(false);
+                    } else if (showQuizGenerator) {
+                        setShowQuizGenerator(false);
+                    } else if (showQuizSession) {
+                        handleExitQuiz();
                     } else if (viewMode === 'list' && selectedCards.size > 0) {
                         setSelectedCards(new Set());
                     } else if (viewMode === 'single') {
@@ -277,6 +290,41 @@ const FlashcardFolderPage = () => {
         // TODO: Implement CSV export
         console.log('Exporting cards:', Array.from(selectedCards));
         setErrorMessage('Export functionality coming soon!');
+    };
+
+    const handleStartQuiz = (quiz: any) => {
+        setCurrentQuiz(quiz);
+        setShowQuizGenerator(false);
+        setShowQuizSession(true);
+    };
+
+    const handleQuizComplete = (results: any) => {
+        console.log('Quiz completed:', results);
+        // You could save quiz results to the database here
+        setShowQuizSession(false);
+        setCurrentQuiz(null);
+    };
+
+    const handleExitQuiz = () => {
+        setShowQuizSession(false);
+        setCurrentQuiz(null);
+    };
+
+    const handleViewQuizDetails = (quizResultId: number) => {
+        setCurrentQuizResultId(quizResultId);
+        setShowQuizDetails(true);
+    };
+
+    const handleBackToHistory = () => {
+        setShowQuizDetails(false);
+        setCurrentQuizResultId(null);
+    };
+
+    const handleRetakeQuiz = () => {
+        setShowQuizDetails(false);
+        setCurrentQuizResultId(null);
+        setStudyMode('browse');
+        setShowQuizGenerator(true);
     };
 
     const executeBulkOperation = async () => {
@@ -400,6 +448,7 @@ const FlashcardFolderPage = () => {
                     <FolderDashboardHeader
                         folder={currentFolder}
                         onCreateCard={() => setShowCreateModal(true)}
+                        onGenerateQuiz={() => setShowQuizGenerator(true)}
                         className="mb-8"
                     />
                 )}
@@ -425,7 +474,7 @@ const FlashcardFolderPage = () => {
                             <button
                                 onClick={() => setStudyMode('browse')}
                                 className={`px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2 rounded-md ${studyMode === 'browse'
-                                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                                    ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg'
                                     : 'text-gray-400 hover:text-white hover:bg-gray-800'
                                     }`}
                             >
@@ -433,9 +482,23 @@ const FlashcardFolderPage = () => {
                                 <span>Browse</span>
                             </button>
                             <button
+                                onClick={() => data ? setStudyMode('quiz-history') : null}
+                                className={`px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2 rounded-md ${studyMode === 'quiz-history'
+                                    ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg'
+                                    : data
+                                        ? 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                        : 'text-gray-600 cursor-not-allowed opacity-60'
+                                    }`}
+                                disabled={!data}
+                            >
+                                <Trophy className="w-4 h-4" />
+                                <span>Quiz History</span>
+                                {!data && <Lock className="w-3 h-3" />}
+                            </button>
+                            <button
                                 onClick={() => data ? setStudyMode('analytics') : null}
                                 className={`px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2 rounded-md ${studyMode === 'analytics'
-                                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+                                    ? 'bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-lg'
                                     : data
                                         ? 'text-gray-400 hover:text-white hover:bg-gray-800'
                                         : 'text-gray-600 cursor-not-allowed opacity-60'
@@ -614,13 +677,47 @@ const FlashcardFolderPage = () => {
                     </DashboardCard>
                 )}
 
-                {/* Analytics Mode */}
-                {studyMode === 'analytics' && (
-                    <DashboardCard title="Analytics" icon={BarChart3} iconColor="text-purple-400">
+                {/* Quiz History Mode */}
+                {studyMode === 'quiz-history' && (
+                    <DashboardCard title="Quiz History" icon={Trophy} iconColor="text-teal-400">
                         {!data ? (
                             <div className="text-center py-12">
-                                <div className="w-16 h-16 bg-purple-900/50 border border-purple-800 flex items-center justify-center mx-auto mb-6">
-                                    <BarChart3 className="w-8 h-8 text-purple-400" />
+                                <div className="w-16 h-16 bg-teal-900/50 border border-teal-800 flex items-center justify-center mx-auto mb-6">
+                                    <Trophy className="w-8 h-8 text-teal-400" />
+                                </div>
+                                <h3 className="text-2xl font-semibold text-white mb-4">
+                                    Sign in to view quiz history
+                                </h3>
+                                <p className="text-gray-400 mb-6 max-w-md mx-auto">
+                                    Track your quiz performance, review past results, and see your progress over time.
+                                </p>
+                            </div>
+                        ) : showQuizDetails && currentQuizResultId ? (
+                            <QuizResultDetails
+                                quizResultId={currentQuizResultId}
+                                onBack={handleBackToHistory}
+                                onRetakeQuiz={handleRetakeQuiz}
+                                mounted={mounted}
+                            />
+                        ) : (
+                            <QuizHistory
+                                folderId={folderId}
+                                folderName={currentFolder?.name || ''}
+                                onViewDetails={handleViewQuizDetails}
+                                onRetakeQuiz={handleRetakeQuiz}
+                                mounted={mounted}
+                            />
+                        )}
+                    </DashboardCard>
+                )}
+
+                {/* Analytics Mode */}
+                {studyMode === 'analytics' && (
+                    <DashboardCard title="Analytics" icon={BarChart3} iconColor="text-red-400">
+                        {!data ? (
+                            <div className="text-center py-12">
+                                <div className="w-16 h-16 bg-red-900/50 border border-red-800 flex items-center justify-center mx-auto mb-6">
+                                    <BarChart3 className="w-8 h-8 text-red-400" />
                                 </div>
                                 <h3 className="text-2xl font-semibold text-white mb-4">
                                     Sign in to view analytics
@@ -648,6 +745,30 @@ const FlashcardFolderPage = () => {
                         onCardsGenerated={handleGeneratedCards}
                         mounted={mounted}
                     />
+                )}
+
+                {/* Quiz Generator Modal */}
+                {currentFolder && (
+                    <QuizGeneratorModal
+                        isOpen={showQuizGenerator}
+                        onClose={() => setShowQuizGenerator(false)}
+                        folderId={currentFolder.id}
+                        folderName={currentFolder.name}
+                        onStartQuiz={handleStartQuiz}
+                        mounted={mounted}
+                    />
+                )}
+
+                {/* Quiz Session */}
+                {showQuizSession && currentQuiz && (
+                    <div className="fixed inset-0 bg-black z-50 overflow-y-auto">
+                        <QuizSession
+                            quiz={currentQuiz}
+                            onComplete={handleQuizComplete}
+                            onExit={handleExitQuiz}
+                            mounted={mounted}
+                        />
+                    </div>
                 )}
 
                 {errorMessage && (
